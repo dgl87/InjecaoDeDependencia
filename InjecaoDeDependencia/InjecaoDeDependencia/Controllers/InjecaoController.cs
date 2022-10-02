@@ -8,30 +8,35 @@ namespace InjecaoDeDependencia.Controllers
     [Route("[controller]")]
     public class InjecaoController : ControllerBase
     {
-        private IOperacao _operacao;
-        private IServiceProvider _provider;
-        public InjecaoController(IOperacao operacao, IServiceProvider provider)
+        private readonly IOperacaoSccoped _sccoped;
+        private readonly IOperacaoTransient _transient;
+        private readonly IOperacaoSingleton _singleton;
+        public InjecaoController(
+            IOperacaoSccoped sccoped, 
+            IOperacaoTransient transient, 
+            IOperacaoSingleton singleton)
         {
-            _operacao = operacao;
-            _provider = provider;
+            _sccoped = sccoped;
+            _transient = transient;
+            _singleton = singleton;
         }
 
         [HttpGet("Construtor")]
-        public IActionResult Construtor()
+        public IActionResult Construtor(
+            [FromServices] IOperacaoSccoped sccoped, 
+            [FromServices] IOperacaoTransient transient, 
+            [FromServices] IOperacaoSingleton singleton)
         {
-            return Ok(_operacao.Id);
-        }
+            return Ok(new
+            {
+                Transient = _transient.Id,
+                Sccoped = _sccoped.Id,
+                Singleton = _singleton.Id,
 
-        [HttpGet("Anotacao")]
-        public IActionResult Anotacao([FromServices] IOperacao operacao)
-        {
-            return Ok(operacao.Id);
-        }
-
-        [HttpGet("Provider")]
-        public IActionResult Provider()
-        {
-            return Ok(_provider.GetRequiredService<IOperacao>());
-        }
+                Transient02 = transient.Id,
+                Sccoped02 = sccoped.Id,
+                Singleton02 = singleton.Id,
+            });
+        }        
     }
 }

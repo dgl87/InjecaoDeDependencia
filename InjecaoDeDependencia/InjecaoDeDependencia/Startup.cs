@@ -26,6 +26,10 @@ namespace InjecaoDeDependencia
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IOperacaoTransient, Operacao>(); //descarta quando a requisição (200) é encerrada 
+            services.AddScoped<IOperacaoSccoped, Operacao>(); //Utiliza a mesma 
+            services.AddSingleton<IOperacaoSingleton, Operacao>(); //descarta quando o container for encerrado, ou seja, quando a aplicação encerra
+
             services.AddScoped<IOperacao, Operacao>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
